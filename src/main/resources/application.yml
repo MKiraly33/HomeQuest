@@ -14,9 +14,9 @@ spring:
       cache:
         period: 0
   datasource:
-    username: admin
+    username: root
     password: admin
-    url: jdbc:mysql://localhost:3309/homequest
+    url: jdbc:mysql://localhost:3306/homequest
   jpa:
     hibernate:
       ddl-auto: create-drop
