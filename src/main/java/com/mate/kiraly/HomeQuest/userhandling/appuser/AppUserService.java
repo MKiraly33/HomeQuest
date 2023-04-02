@@ -3,7 +3,8 @@ package com.mate.kiraly.HomeQuest.userhandling.appuser;
 import com.mate.kiraly.HomeQuest.userhandling.email.EmailSender;
 import com.mate.kiraly.HomeQuest.userhandling.registration.token.ConfirmationToken;
 import com.mate.kiraly.HomeQuest.userhandling.registration.token.ConfirmationTokenService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AppUserService implements UserDetailsService {
 
     private final static String USER_NOT_FOUND_MSG = "User with email %s not found";
@@ -24,6 +25,11 @@ public class AppUserService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
+
+    @Value("${HomeQuest.domainName}")
+    private String domainName;
+    @Value("${HomeQuest.port}")
+    private String port;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -84,7 +90,7 @@ public class AppUserService implements UserDetailsService {
                 oldUser.setIsEnabled(false);
                 confirmationTokenService.saveConfirmationToken(confirmationToken);
                 //registrationService.sendMail(token, oldUser.getEmail(), user.getFirstName());
-                String link = "http://localhost:8080/confirm?token=" + token;
+                String link = "http://"+ domainName + ":" + port +"/confirm?token=" + token;
                 emailSender.send(oldUser.getEmail(), buildEmail(user.getFirstName(), link));
                 isChanged = true;
             }

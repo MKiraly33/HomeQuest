@@ -7,20 +7,25 @@ import com.mate.kiraly.HomeQuest.userhandling.appuser.AppUserService;
 import com.mate.kiraly.HomeQuest.userhandling.email.EmailSender;
 import com.mate.kiraly.HomeQuest.userhandling.registration.token.ConfirmationToken;
 import com.mate.kiraly.HomeQuest.userhandling.registration.token.ConfirmationTokenService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RegistrationService {
 
     private final EmailValidator emailValidator;
     private final AppUserService userService;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
+    @Value("${HomeQuest.domainName}")
+    private String domainName;
+    @Value("${HomeQuest.port}")
+    private String port;
 
     public String register(RegistrationRequest request){
         if(!emailValidator.test(request.getEmail())){
@@ -37,7 +42,7 @@ public class RegistrationService {
     }
 
     public String sendMail(String token, String email, String firstname){
-        String link = "http://localhost:8080/confirm?token=" + token;
+        String link = "http://"+ domainName + ":" + port +"/confirm?token=" + token;
         emailSender.send(email, buildEmail(firstname, link));
         return link;
     }
