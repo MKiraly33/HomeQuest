@@ -54,10 +54,9 @@ public class QuestController {
     }
 
     @GetMapping(path = "managequests")
-    public String manageQuests(Model model, @RequestParam Optional<String> operation, @RequestParam Optional<String> id){
-        questService.questOperation(operation, id);
+    public String manageQuests(Model model, @RequestParam Optional<String> operation, @RequestParam Optional<String> id, @RequestParam Optional<String> requestor){
         model.addAttribute("quests", questService.getQuestsByCurrentUser());
         model.addAttribute("helper", questService);
-        return "manageQuests";
+        return questService.questOperation(operation, id, requestor);
     }
 }

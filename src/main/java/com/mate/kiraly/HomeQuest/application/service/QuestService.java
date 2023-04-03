@@ -13,5 +13,5 @@ public interface QuestService {
     public List<Quest> getQuestsForCurrentUser();
     public List<Quest> getQuestsByCurrentUser();
     public String getHoursBetweenNowAndQuestGiven(LocalDateTime questGivenAt);
-    public void questOperation(Optional<String> operation, Optional<String> questId);
+    public String questOperation(Optional<String> operation, Optional<String> questId, Optional<String> requestor);
 }

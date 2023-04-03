@@ -42,11 +42,20 @@ public class QuestServiceImpl implements QuestService{
         quests.sort(new Comparator<Quest>() {
             @Override
             public int compare(Quest o1, Quest o2) {
-                if(o1.getQuestGivenAt().isBefore(o2.getQuestGivenAt())){
-                    return 1;
-                } else if (o2.getQuestGivenAt().isBefore(o1.getQuestGivenAt())) {
-                    return -1;
-                }else {
+                if((o1.getIsCompleted() && o2.getIsCompleted()) || (!o1.getIsCompleted() && !o2.getIsCompleted())) {
+                    if (o1.getQuestGivenAt().isBefore(o2.getQuestGivenAt())) {
+                        return 1;
+                    } else if (o2.getQuestGivenAt().isBefore(o1.getQuestGivenAt())) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }else{
+                    if(o1.getIsCompleted() && !o2.getIsCompleted()){
+                        return 1;
+                    }else if(!o1.getIsCompleted() && o2.getIsCompleted()){
+                        return -1;
+                    }
                     return 0;
                 }
             }
@@ -89,9 +98,13 @@ public class QuestServiceImpl implements QuestService{
     }
     @Transactional
     @Override
-    public void questOperation(Optional<String> operation, Optional<String> questId) {
+    public String questOperation(Optional<String> operation, Optional<String> questId, Optional<String> requestor) {
+        String toReturn = "managequests";
+        if(requestor.isPresent()){
+            toReturn = "redirect:" + requestor.get();
+        }
         if(operation.isEmpty() || questId.isEmpty()){
-            return; //TODO: failure
+            return toReturn; //TODO: failure
         }
         Long id = Long.parseLong(questId.get());
         switch (operation.get()){
@@ -105,7 +118,7 @@ public class QuestServiceImpl implements QuestService{
                         q.setIsCompleted(true);
                         questRepository.save(q);
                     }else{
-                        return;
+                        return toReturn;
                     }
                 }
                 break;
@@ -118,10 +131,16 @@ public class QuestServiceImpl implements QuestService{
                         q2 = optionalQuest2.get();
                         q2.setIsCompleted(true);
                         questRepository.save(q2);
+                    }else if(!q2.getIsCompleted() && ((AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId() == q2.getQuestReceiver().getId()){
+                        q2 = optionalQuest2.get();
+                        q2.setIsCompletedByReceiver(true);
+                        questRepository.save(q2);
+                        return toReturn;
                     }
                 }
                 break;
-            default: return; //TODO: error
+            default: return toReturn; //TODO: error
         }
+        return toReturn;
     }
 }

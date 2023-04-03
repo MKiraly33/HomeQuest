@@ -36,6 +36,8 @@ public class Quest {
     @Column(nullable = false)
     private Boolean isCancelled;
     @Column(nullable = false)
+    private Boolean isCompletedByReceiver;
+    @Column(nullable = false)
     private LocalDateTime questGivenAt;
     private LocalDateTime questCompletedAt;
 
@@ -51,5 +53,6 @@ public class Quest {
         this.questReceiver = questReceiver;
         this.isCompleted = false;
         this.isCancelled = false;
+        this.isCompletedByReceiver = false;
     }
 }
