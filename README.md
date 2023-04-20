@@ -7,6 +7,6 @@ It's original intended purpose is to be a platform where couples / people living
 
 The application is a monolith with Thymeleaf as a templating engine.
 
-##Usage
+## Usage
 
 To run the project you will need a mysql server and [maildev](https://hub.docker.com/r/maildev/maildev)
